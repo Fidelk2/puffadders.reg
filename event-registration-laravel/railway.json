@@ -1,10 +1,10 @@
 {
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
-    "builder": "RAILPACK"
+    "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "php artisan config:clear && php artisan migrate --force && php -S 0.0.0.0:${PORT:-8080} -t public",
+    "startCommand": "php artisan config:clear && php artisan route:clear && php artisan migrate --force && php -S 0.0.0.0:${PORT:-8080} -t public",
     "restartPolicyType": "NEVER"
   }
 }
