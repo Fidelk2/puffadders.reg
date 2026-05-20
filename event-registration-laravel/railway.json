@@ -4,7 +4,7 @@
     "builder": "RAILPACK"
   },
   "deploy": {
-    "startCommand": "php artisan config:clear && php artisan migrate --force && php -S 0.0.0.0:$PORT -t public",
-    "restartPolicyType": "ON_FAILURE"
+    "startCommand": "php artisan config:clear && php artisan migrate --force && php -S 0.0.0.0:${PORT:-8080} -t public",
+    "restartPolicyType": "NEVER"
   }
 }
