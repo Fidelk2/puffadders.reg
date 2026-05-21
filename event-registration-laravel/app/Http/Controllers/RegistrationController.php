@@ -107,7 +107,7 @@ class RegistrationController extends Controller
                 'Password'          => $password,
                 'Timestamp'         => $timestamp,
                 'TransactionType'   => 'CustomerPayBillOnline',
-                'Amount'            => 100,
+                'Amount'            => 1,
                 'PartyA'            => $formatted,
                 'PartyB'            => $shortcode,
                 'PhoneNumber'       => $formatted,
