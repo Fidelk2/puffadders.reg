@@ -70,3 +70,11 @@ Route::get('/payment-status/{id}', function ($id) {
     $registration = \App\Models\Registration::find($id);
     return response()->json(['paid' => $registration ? $registration->paid : false]);
 });
+
+Route::get('/check-views', function () {
+    return response()->json([
+        'success_exists' => file_exists(resource_path('views/success.blade.php')),
+        'layout_exists'  => file_exists(resource_path('views/layouts/app.blade.php')),
+        'waiting_exists' => file_exists(resource_path('views/waiting.blade.php')),
+    ]);
+});
