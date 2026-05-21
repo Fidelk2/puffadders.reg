@@ -43,7 +43,7 @@ class RegistrationController extends Controller
             return view('waiting', ['registration' => $registration]);
 
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
+            dd($e->getMessage());
         }
     }
 
