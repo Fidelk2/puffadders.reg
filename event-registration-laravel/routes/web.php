@@ -24,3 +24,12 @@ Route::get('/test-mpesa', function () {
         return response()->json(['error' => $e->getMessage()]);
     }
 });
+
+Route::get('/test-network', function () {
+    try {
+        $response = \Illuminate\Support\Facades\Http::get('https://httpbin.org/get');
+        return response()->json(['status' => $response->status(), 'ok' => $response->ok()]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()]);
+    }
+});
