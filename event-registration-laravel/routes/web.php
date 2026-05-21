@@ -33,3 +33,35 @@ Route::get('/test-network', function () {
         return response()->json(['error' => $e->getMessage()]);
     }
 });
+
+Route::get('/test-stk', function () {
+    $consumerKey    = env('MPESA_CONSUMER_KEY');
+    $consumerSecret = env('MPESA_CONSUMER_SECRET');
+    $shortcode      = env('MPESA_SHORTCODE');
+    $passkey        = env('MPESA_PASSKEY');
+    $appUrl         = env('APP_URL');
+
+    $tokenResponse = \Illuminate\Support\Facades\Http::withBasicAuth($consumerKey, $consumerSecret)
+        ->get('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials');
+
+    $token     = $tokenResponse->json()['access_token'];
+    $timestamp = now()->format('YmdHis');
+    $password  = base64_encode($shortcode . $passkey . $timestamp);
+
+    $response = \Illuminate\Support\Facades\Http::withToken($token)
+        ->post('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest', [
+            'BusinessShortCode' => $shortcode,
+            'Password'          => $password,
+            'Timestamp'         => $timestamp,
+            'TransactionType'   => 'CustomerPayBillOnline',
+            'Amount'            => 100,
+            'PartyA'            => '254708374149',
+            'PartyB'            => $shortcode,
+            'PhoneNumber'       => '254708374149',
+            'CallBackURL'       => $appUrl . '/mpesa/callback',
+            'AccountReference'  => 'REG-TEST',
+            'TransactionDesc'   => 'Event Registration',
+        ]);
+
+    return response()->json($response->json());
+});
