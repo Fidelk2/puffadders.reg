@@ -31,7 +31,7 @@
     const checkPayment = setInterval(async () => {
         const res = await fetch('/payment-status/{{ $registration->id }}');
         const data = await res.json();
-        if (data.paid) {
+        if (data.paid == 1 || data.paid === true) {
             clearInterval(checkPayment);
             clearInterval(countdown);
             window.location.href = '/success';
