@@ -65,3 +65,8 @@ Route::get('/test-stk', function () {
 
     return response()->json($response->json());
 });
+
+Route::get('/payment-status/{id}', function ($id) {
+    $registration = \App\Models\Registration::find($id);
+    return response()->json(['paid' => $registration ? $registration->paid : false]);
+});
