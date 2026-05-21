@@ -48,27 +48,41 @@ class RegistrationController extends Controller
     }
 
     public function callback(Request $request)
-    {
-        $body = $request->input('Body.stkCallback');
+{
+    \Log::info('MPesa Callback received', $request->all());
 
-        if (!$body || $body['ResultCode'] !== 0) {
-            return response()->json(['ResultCode' => 0]);
-        }
+    $body = $request->input('Body.stkCallback');
 
-        $checkoutRequestId = $body['CheckoutRequestID'];
-        $registration = Registration::where('checkout_request_id', $checkoutRequestId)->first();
+    if (!$body || $body['ResultCode'] !== 0) {
+        \Log::info('Payment failed or cancelled', ['body' => $body]);
+        return response()->json(['ResultCode' => 0]);
+    }
 
-        if (!$registration) return response()->json(['ResultCode' => 0]);
+    $checkoutRequestId = $body['CheckoutRequestID'];
+    \Log::info('Looking for registration', ['checkout_id' => $checkoutRequestId]);
 
-        $registration->update(['paid' => true]);
+    $registration = Registration::where('checkout_request_id', $checkoutRequestId)->first();
 
+    if (!$registration) {
+        \Log::info('Registration not found');
+        return response()->json(['ResultCode' => 0]);
+    }
+
+    $registration->update(['paid' => true]);
+    \Log::info('Registration marked as paid', ['id' => $registration->id]);
+
+    try {
         Mail::send('emails.confirmation', ['registration' => $registration], function ($mail) use ($registration) {
             $mail->to($registration->email)
                  ->subject('🎉 You are registered — ' . $registration->course);
         });
-
-        return response()->json(['ResultCode' => 0]);
+        \Log::info('Email sent to ' . $registration->email);
+    } catch (\Exception $e) {
+        \Log::error('Email failed: ' . $e->getMessage());
     }
+
+    return response()->json(['ResultCode' => 0]);
+}
 
     public function success()
     {
